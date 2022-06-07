@@ -17,16 +17,16 @@ class Entity {
     std::string lastname;
     int book_id;
     int client_id;
-    bool lend;
+    std::string borrowed;
 
 
 public:
     Entity() : id(-1), titles("0"), genres({}), year(-1), pages(-1), id_authors(-1), name("0"),
-              lastname("0"), book_id(-1), client_id(-1), lend(false) {};
+              lastname("0"), book_id(-1), client_id(-1), borrowed("0") {};
 
     Entity(int id, std::string name, std::string lastname): id(id), name(name), lastname(lastname){};
 
-    Entity(int id, int book_id, int client_id, bool lend): id(id), book_id(book_id), client_id(client_id), lend(lend){};
+    Entity(int id, int book_id, int client_id, std::string borrowed): id(id), book_id(book_id), client_id(client_id), borrowed(borrowed){};
 
     Entity (int id, std::string titles, std::string genres, int year, int pages, int id_authors):
         id(id),
@@ -47,8 +47,10 @@ public:
             else {
                 if (book_id != -1) {
                     if (client_id != -1) {
-                        Entity e(id, book_id, client_id, lend);
-                        return e;
+                        if(borrowed != "0") {
+                            Entity e(id, book_id, client_id, borrowed);
+                            return e;
+                        }
                     }
                 }
                 else {
@@ -109,8 +111,8 @@ public:
         this->client_id = clientId;
     }
 
-    void setLend(bool lend) {
-        this->lend = lend;
+    void setBorrowed(const std::string &borrowed) {
+        Entity::borrowed = borrowed;
     }
 
     int getId() const {
@@ -153,8 +155,8 @@ public:
         return client_id;
     }
 
-    bool isLend() const {
-        return lend;
+    const std::string &getBorrowed() const {
+        return borrowed;
     }
 
 };
@@ -289,6 +291,7 @@ class Tables {
                     output.append(std::to_string(e.getPages()));
                     output.append(",");
                     output.append(std::to_string(e.getIdAuthors()));
+                    output.append(",");
                     output.append("\n");
                 }
 
@@ -299,7 +302,8 @@ class Tables {
                     output.append(",");
                     output.append(std::to_string(e.getClientId()));
                     output.append(",");
-                    output.append(std::to_string(e.isLend()));
+                    output.append((e.getBorrowed()));
+                    output.append(",");
                     output.append("\n");
                 }
 
@@ -309,6 +313,7 @@ class Tables {
                     output.append(e.getName());
                     output.append(",");
                     output.append(e.getLastname());
+                    output.append(",");
                     output.append("\n");
                 }
             if(!file) {
@@ -398,10 +403,10 @@ class Tables {
                     value = input.substr(0, i);
                     e.setClientId(std::stoi(value));
 
-                    input = input.substr(i + 1);
+                    input = input.substr(i + 1); //tODO: czy ostatni element napewni do ,
                     i = input.find(",");
                     value = input.substr(0, i);
-                    e.setLend(std::stoi(value));
+                    e.setBorrowed(value);
 
                     item.push_back(e.getEntity());
 
@@ -611,7 +616,7 @@ class Interface {
                     std::cout << "     " << item.getId() << "  |  "
                               << "     " << item.getBookId() << "  |  "
                               << "     " << item.getClientId() << "  |  "
-                              << "     " << item.isLend() << "  |  ";
+                              << "     " << item.getBorrowed() << "  |  ";
                 }
         }
         if (pauseEnded) {
@@ -690,9 +695,8 @@ class Interface {
                     e.setGenres(input);
                 }
                 else if (item == "lend") {
-                    e.setLend( std::stoi(input.c_str()));
+                    e.setBorrowed(input);
                 }
-
                 else if (item == "year") {
                     e.setYear(std::stoi(input));
                 }
@@ -929,7 +933,7 @@ class Orders {
     static void menu() {
 
         std::string order;
-        order = Interface::printInterface("oders", {"enter, read, back, read not lend"});
+        order = Interface::printInterface("oders", {"enter", "read", "back", "read not borrowed"});
 
         if (order == "enter") {
             addOrder();
@@ -961,8 +965,7 @@ class Orders {
 
     static void printAvailableBooks() {
 
-        std::vector<std::vector<std::string>> result;
-        int idBooks = Tables::getColumnIndex("orders", "id books");
+
         //TODONE: brak implementacji
 
     }
