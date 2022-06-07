@@ -7,10 +7,6 @@
 #include <unistd.h>
 
 class Entity {
-//    Client client;
-//    Book book;
-//    Author author;
-//    Order order;
     int id;
     std::string titles;
     std::string genres;
@@ -184,18 +180,6 @@ void initializeHeaders() {
 }
 
 void initializeData() {
-    // std::vector<std::vector<std::string>> clients = {};
-
-    //e.setAuthor()
-    // std::vector<std::vector<Client>> clients = {};
-    // std::vector<std::vector<Book>> books = {};
-    // std::vector<std::vector<Author>> authors = {};
-    // std::vector<std::vector<Order>> orders = {};
-    // std::vector<std::vector<Entity>> clients = {};
-    // std::vector<std::vector<Entity>> books= {};
-    // std::vector<std::vector<Entity>> authors= {};
-    // std::vector<std::vector<Entity>> orders = {};
-
     std::vector<Entity> clients = {};
     std::vector<Entity> books = {};
     std::vector<Entity> authors = {};
