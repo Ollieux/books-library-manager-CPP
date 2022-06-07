@@ -323,7 +323,7 @@ class Tables {
 
     public:
     static int getColumnIndex(std::string table, std::string headerName) {
-        std::cout << "#szukanie indexu kolumny " << headerName << " w tableli " << table << "...";
+        std::cout << "#searching for column index " << headerName << " in table " << table << "...";
         int temp {-1};
         for (int i = 0; i < headers[table].size(); i++) {
             if (headers[table][i] == headerName) {
@@ -351,13 +351,29 @@ class Tables {
         return result.getEntity();
     }
 
-    static void initializeDB() {
-        try {
-            std::cout << "baza danych nie została wykryta"; //TODO: endl
-            createTables();
-            std::cout << "~ baza danych została stworzona ~"; //TODO: endl
+    static void initializeDB() { //TODO: potencjalna konktatencja nazwy pliku z .txt
+
+        bool flag = false;
+        for(std::map<std::string, std::vector<Entity>>::iterator iter = data.begin(); iter != data.end(); ++iter) {
+            std::string item = iter->first;
+            std::ifstream file;
+            file.open(item);
+            if (!file) {
+                flag = true;
+                std::cout << "File " << item << " not found" << std::endl;
+            }
+            file.close();
         }
-        readTables();
+        if(flag) {
+            std::cout << "There was no existing database" << std::endl; //TODONE: endl
+            createTables();
+            std::cout << "~  database was created ~"; //TODONE: endl
+        }
+        else {
+            std::cout << "database exists!" << std::endl;
+            readTables();
+        }
+
     }
 
     static void createTables() {
@@ -366,11 +382,11 @@ class Tables {
             std::ofstream file;
             file.open(item);
             if(!file) {
-                std::cerr << "Blad tworzenia pliku " << item;
+                std::cerr << "file creation error " << item;
             }
             file.close();
 
-            std::cout << "~ stworzono tabelę " << item << "  ~";
+            std::cout << "~ table created " << item << "  ~" << std::endl;
         }
     }
 
@@ -422,7 +438,7 @@ class Tables {
 
 
             if(!file) {
-                std::cerr << "Blad otwarcia pliku " << table;
+                std::cerr << "file opening error " << table;
             }
 
             file << (output);
@@ -436,12 +452,12 @@ class Tables {
 
             std::vector<Entity> item = iter->second;
             std::string table = iter->first;
-            std::cout << "-odczyt tabeli " << table;
+            std::cout << "-read table " << table << std::endl;
             std::ifstream file;
             file.open(table);
 
             if (!file) {
-                std::cerr << "Blad otwarcia pliku" << table;
+                std::cerr << "File opening error" << table ;
             }
 
             if (table == "books") {
@@ -543,6 +559,7 @@ class Tables {
                 file.close();
             }
         }
+        std::cout << std::endl;
     }
 };
 
@@ -550,7 +567,7 @@ class System {
 
     public:
     static void boot() {
-        std::cout << "START MANAGERA BIBLIOTECZNEGO...";
+        std::cout << "LIBRARY MANAGER IS BOOTING..." << std::endl;
         //sleep
         configLoading();
         Tables::initializeDB();
@@ -567,11 +584,56 @@ class System {
     }
 
     static void configLoading() {
-        //TODO:
+
+        std::ifstream file;
+        file.open("config.txt");
+        if (file) { //// Config istnieje
+            for (std::map<std::string, int>::iterator iter = config.begin(); iter != config.end(); ++iter) {
+                std::string item = iter->first;
+                int line = 0;
+
+                if(item == "books") {
+                }
+                else if(item == "authors") {
+                    line = 1;
+                }
+                else if(item == "clients") {
+                    line  = 2;
+                }
+                else if(item == "orders") {
+                    line = 3;
+                }
+                int i = 0;
+                while(true) {
+                    std::string input;
+                    file >> input;
+                    if(i == line) {
+                        config[item] = std::stoi(input);
+                        break;
+                    }
+                    i++;
+                }
+            }
+            std::cout << "config read successfully" << std::endl;
+            file.close();
+        }
+        else {
+            std::cout << "ERROR: config couldn't be read" << std::endl;
+            updateConfig();
+        }
+
     }
 
     static void updateConfig() {
-        //TODO:
+
+        std::ofstream file;
+        file.open("config.txt");
+        for (std::map<std::string, int>::iterator iter = config.begin(); iter != config.end(); ++iter) {
+            std::string item = iter->first;
+            int value = iter->second;
+            file << std::to_string(value) << "\n";
+        }
+        file.close();
 
     }
 
@@ -580,18 +642,18 @@ class System {
             std::cout << std::endl;
             std::cout << std::endl;
             std::cout << std::endl;
-            std::cout << "     CZY CHCESZ ZAPISAĆ ZMIANY? (y/n)";
+            std::cout << "     DO YOU WANT TO SAVE CHANGES? (y/n)";
             char order;
             std::cin >> order;
             std::cout << std::endl;
             if (order == 'y') {
-                std::cout << "~ config.json został zaktualizowany ~";
+                std::cout << "~ config was updated ~";
                 updateConfig();
                 Tables::writeTables();
                 break;
             }
             else if (order == 'n') {
-                std::cout << "zmiany zostały porzucone";
+                std::cout << "changes were abandon";
                 break;
             }
         }
@@ -603,35 +665,35 @@ class Interface {
 
     public:
     static void printHeader(std::string title){
+        std::cout  << std::endl;
+        std::cout << "  ########################" << std::endl;
         std::cout << std::endl;
-        std::cout << "  ########################";
-        std::cout << std::endl;
-        std::cout << "    ~~~ Baza danych biblioteki ~~~";
-        std::cout << "    "+title;
+        std::cout << "    ~~~ Library database ~~~" << std::endl;
+        std::cout << "    "+title << std::endl;
         std::cout << std::endl;
     }
 
     static std::string printInterface(std::string title, std::vector<std::string> options) { //TODO: sprawdz czy size parametrowego vectora sie sprawdzi czy jakis const
         printHeader(title);
-        std::cout << "     OPCJE:";
+        std::cout << "     OPTIONS:" << std::endl;
         std::cout << std::endl;
 
         for (int i = 0; i < options.size(); i++) {
-            std::cout << "     " << i;
+            std::cout << "     " << options[i] << std::endl;
         }
 
         std::cout << std::endl;
-        std::cout << "  ########################";
+        std::cout << "  ########################" << std::endl;
         std::cout << std::endl;
         std::string order;
-        std::cout << "     ~[wprowadź komendę]~>";
+        std::cout << "     ~[provide command]~>";
         std::cin >> order;
         std::cout << std::endl;
         return order;
     }
 
     static void unknownCommandPrompt() {
-        std::cout << "!!! nie rozpoznano komendy !!!";
+        std::cout << "!!! Unrecognised command !!!";
         //sleep
     }
 
@@ -679,12 +741,11 @@ class Interface {
         printTableFromData(name, headers[name], data[name], pauseEnded);
     }
 
-    //std::string specialInput()
 
     static int choiceFromTable(std::string title) {
         while (true) {
             std::string choice;
-            std::cout <<  "    czy chcesz wprowadzić nowy rekord? (y/n)";
+            std::cout <<  "    do you want to insert new record? (y/n)";
             std::cin >> choice;
             if(choice == "y") {
                 data[title].push_back(insertRow(title));
@@ -694,7 +755,7 @@ class Interface {
             else if(choice == "n") {
                printTable(title, false);
                std::string temp;
-               std::cout << "     wybierz id " << title <<":";
+               std::cout << "     choose id " << title <<":";
                std::cin >> temp;
                return stoi(temp);
             }
@@ -704,7 +765,7 @@ class Interface {
     static std::vector<std::string> _insertRow(std::string title) {
         std::vector<std::string> inputData;
         std::cout << std::endl;
-        std::cout << "     tabela " << title << " - wprowadzanie danych";
+        std::cout << "     table " << title << " - data entry";
         std::cout << std::endl;
         //for(int i = 0; i < headers[title].size(); i++) {
         for (std::string item : headers[title]) {
@@ -725,7 +786,7 @@ class Interface {
 
         }
         std::cout << std::endl;
-        std::cout << "     zakończono wprowadzanie danych";
+        std::cout << "     finished data entry";
         std::cout << std::endl;
         return inputData;
 
@@ -734,7 +795,7 @@ class Interface {
     static Entity insertRow(std::string title) {
         Entity e;
         std::cout << std::endl;
-        std::cout << "     tabela " << title << " - wprowadzanie danych";
+        std::cout << "     table " << title << " - data entry";
         std::cout << std::endl;
 
         for (std::string item : headers[title]) {
@@ -790,7 +851,7 @@ class Interface {
 
         }
         std::cout << std::endl;
-        std::cout << "     zakończono wprowadzanie danych";
+        std::cout << "     finished data entry";
         std::cout << std::endl;
 
         return e.getEntity();
@@ -809,15 +870,15 @@ class Books {
 
     static void menu() {
         std::string order;
-        order = Interface::printInterface("ksiazki", {
-                "dodaj",
-                "wypisz",
-                "wypisz rosnąco",
-                "wypisz malejąco",
-                "wypisz konkretnego autorstwa",
-                "wypisz chudsze niż",
-                "wypisz grubsze niż",
-                "wróć"
+        order = Interface::printInterface("books", {
+                "enter",
+                "read",
+                "read ascending",
+                "read descending",
+                "read by author",
+                "read thicker than",
+                "read slimmer than",
+                "back"
         });
 
 //        switch(order) {
@@ -850,33 +911,33 @@ class Books {
 //                interface::unknownCommandPrompt();
 //                menu();
 //        }
-        if (order == "dodaj") {
+        if (order == "enter") {
             addBook();
             menu();
-        } else if (order == "wypisz") {
+        } else if (order == "read") {
             printBooks();
             menu();
-        } else if (order == "wypisz rosnąco") {
-            printBooksByColumn("descending");
-            menu();
-        }
-        else if (order == "wypisz malejąco") {
+        } else if (order == "read ascending") {
             printBooksByColumn();
             menu();
         }
-        else if (order == "wypisz konkretnego autorstwa") {
+        else if (order == "read descending") {
+            printBooksByColumn("descending");
+            menu();
+        }
+        else if (order == "read by author") {
             printBooksByAuthorOnly();
             menu();
         }
-        else if (order == "wypisz chudzsze niż") {
+        else if (order == "read slimmer than") {
             printBooksBySize();
             menu();
         }
-        else if (order == "wypisz grubsze niż") {
+        else if (order == "read thicker than") {
             printBooksBySize("thicker");
             menu();
         }
-        else if (order == "wróć") {
+        else if (order == "back") {
             //TODO: None
         }
         else {
@@ -928,7 +989,7 @@ class Books {
         }
         std::cout << std::endl;
         std::string input;
-        std::cout << "     wybierz kolumnę:";
+        std::cout << "     choose column:";
         std::cin >> input;
         int column = Tables::getColumnIndex("books", input);
 
@@ -987,7 +1048,7 @@ class Books {
     }
 
     static void _printBooksBySize(std::string mode="slimmer") {
-        std::cout << "Podaj ilość stron: ";
+        std::cout << "Provide page number: ";
         std::string input;
         std::cin >> input;
         std::vector<std::vector<std::string>> result;
@@ -1010,7 +1071,7 @@ class Books {
     }
 
     static void printBooksBySize(std::string mode="slimmer") {
-        std::cout << "Podaj ilość stron: ";
+        std::cout << "Provide number of pages:  ";
         std::string input;
         std::cin >> input;
         std::vector<Entity> result;
@@ -1037,7 +1098,7 @@ class Books {
         std::cout << std::endl;
         Interface::printTable("authors", false);
         std::cout << std::endl;
-        std::cout << "     podaj id autora:";
+        std::cout << "     provide author's id:";
         int idSearched;
         std::cin >> idSearched;
         //// std::vector<std::vector<std::string>> result;
@@ -1076,16 +1137,21 @@ class Clients {
 
     static void menu() {
         std::string order;
-        order = Interface::printInterface("clients", {"dodaj", "wypisz", "wróć"});
+        order = Interface::printInterface("clients", {"enter", "read", "back"});
 
-        if (order == "dodaj") {
+        if (order == "enter") {
             addClient();
             menu();
         }
-        else if (order == "wypisz") {
+        else if (order == "read") {
             printClients();
             menu();
         }
+
+        else if (order == "back") {
+            //TODO: exit()
+        }
+
         else {
             Interface::unknownCommandPrompt();
             menu();
@@ -1110,17 +1176,17 @@ class Orders {
     static void menu() {
 
         std::string order;
-        order = Interface::printInterface("oders", {"dodaj, wypisz, wróć, wypisz niewyporzyczone"});
+        order = Interface::printInterface("oders", {"enter, read, back, read not lend"});
 
-        if (order == "dodaj") {
+        if (order == "enter") {
             addOrder();
             menu();
         }
-        else if (order == "wypisz") {
+        else if (order == "read") {
             printOrders();
             menu();
         }
-        else if (order == "wypisz niewyporzyczone") {
+        else if (order == "read not lend") {
             printAvailableBooks();
             menu();
         }
@@ -1156,16 +1222,16 @@ class Authors {
     public:
     static void menu() {
         std::string order;
-        order = Interface::printInterface("authors", {"dodaj", "wypisz", "wróć"});
-        if (order == "dodaj") {
+        order = Interface::printInterface("authors", {"enter", "read", "back"});
+        if (order == "enter") {
             addAuthor();
             menu();
         }
-        else if (order == "wypisz") {
+        else if (order == "read") {
             printAuthors();
             menu();
         }
-        else if (order == "wróć") {
+        else if (order == "back") {
             //TODO: None
         }
         else {
@@ -1212,7 +1278,7 @@ int main() {
 
     System::boot();
     while(true) {
-        std::cout << "UWAGA! zapis danych następuje przy wpisaniu komendy 'wyjdź'";
+        std::cout << "WARNING! data write occurs after providing 'exit' command" << std::endl;
         menu();
     }
 
