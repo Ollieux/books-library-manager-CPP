@@ -13,7 +13,7 @@ class Entity {
 //    Order order;
     int id;
     std::string titles;
-    std::vector<std::string> genres;
+    std::string genres;
     int year;
     int pages;
     int id_authors;
@@ -32,7 +32,7 @@ public:
 
     Entity(int id, int book_id, int client_id, bool lend): id(id), book_id(book_id), client_id(client_id), lend(lend){};
 
-    Entity (int id, std::string titles, std::vector<std::string>genres, int year, int pages, int id_authors):
+    Entity (int id, std::string titles, std::string genres, int year, int pages, int id_authors):
         id(id),
         titles(titles),
         genres(genres),
@@ -81,8 +81,8 @@ public:
         this->titles = titles;
     }
 
-    void setGenres(const std::vector<std::string> &genres) {
-        this->genres = genres;
+    void setGenres(const std::string &genres) {
+        Entity::genres = genres;
     }
 
     void setYear(int year) {
@@ -125,7 +125,7 @@ public:
         return titles;
     }
 
-    const std::vector<std::string> &getGenres() const {
+    const std::string &getGenres() const {
         return genres;
     }
 
@@ -312,7 +312,7 @@ class Tables {
                     output.append(",");
                     output.append(e.getTitles());
                     output.append(",");
-                    output.append(e.getGenres()[0]);
+                    output.append(e.getGenres());
                     output.append(",");
                     output.append(std::to_string(e.getYear()));
                     output.append(",");
@@ -390,9 +390,7 @@ class Tables {
                     input = input.substr(i + 1);
                     i = input.find(",");
                     value = input.substr(0, i);
-                    std::vector<std::string> genres;
-                    genres.push_back(value);
-                    e.setGenres(genres);
+                    e.setGenres(value);
 
                     input = input.substr(i + 1);
                     i = input.find(",");
@@ -714,8 +712,7 @@ class Interface {
                 }
                 else if(item == "genres") {
                     std::vector<std::string> temp;
-                    temp.push_back(input);
-                    e.setGenres(temp);
+                    e.setGenres(input);
                 }
                 else if (item == "lend") {
                     e.setLend( std::stoi(input.c_str()));
@@ -741,10 +738,6 @@ class Interface {
 
     }
 };
-
-
-
-
 
 class Books {
 
