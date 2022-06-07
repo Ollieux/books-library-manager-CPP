@@ -157,14 +157,10 @@ public:
         return lend;
     }
 
-
 };
 
 std::map<std::string, std::vector<std::string>> headers;
-// std::map<std::string, std::vector<std::vector<std::string>>> data;
-// std::map<std::string, std::vector<std::vector<Entity>>> data;
 std::map<std::string, std::vector<Entity>> data;
-// std::map<std::string, std::map<std::string, int>> config;
 std::map<std::string, int> config;
 
 void initializeHeaders() {
@@ -199,8 +195,6 @@ void initializeConfig() {
     config["orders"] = 0;
 
 }
-
-
 
 class Tables {
 
@@ -710,16 +704,12 @@ class Interface {
                     e.setTitles(input);
                 }
             }
-
-
         }
         std::cout << std::endl;
         std::cout << "     finished data entry";
         std::cout << std::endl;
 
         return e.getEntity();
-
-
     }
 };
 
