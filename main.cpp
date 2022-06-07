@@ -674,36 +674,6 @@ class Interface {
         }
     }
 
-    static std::vector<std::string> _insertRow(std::string title) {
-        std::vector<std::string> inputData;
-        std::cout << std::endl;
-        std::cout << "     table " << title << " - data entry";
-        std::cout << std::endl;
-        //for(int i = 0; i < headers[title].size(); i++) {
-        for (std::string item : headers[title]) {
-            std::string pre = item.substr(0, 3);
-            std::string rest = item.substr(3);
-            if (item == "id") {
-                // inputData.push_back(system::autoincrement(title));
-            }
-            else if (pre == "id ") {
-                // inputData.push_back(choiceFromTable(rest));
-            }
-            else {
-                std::string input;
-                std::cin >> input;
-                std::replace(input.begin(), input.end(), ',', '.');
-            }
-
-
-        }
-        std::cout << std::endl;
-        std::cout << "     finished data entry";
-        std::cout << std::endl;
-        return inputData;
-
-    }
-
     static Entity insertRow(std::string title) {
         Entity e;
         std::cout << std::endl;
@@ -864,39 +834,6 @@ class Books {
 
     private:
 
-    static void _printBooksByColumn(std::string mode="ascending") {
-        std::cout << std::endl;
-        for (std::string item : headers["books"]) {
-            std::cout << "       " << item;
-        }
-        std::cout << std::endl;
-        std::string input;
-        std::cout << "     wybierz kolumnę:";
-        std::cin >> input;
-        int column = Tables::getColumnIndex("books", input);
-
-        std::vector<std::string> temp, result, temp2;
-
-
-//        for (std::vector<std::string> item : data["books"]){
-//            std::string text = std::to_string(item[column]);
-//            text.append(",");
-//            std::string s = std::to_string(item[Tables::getColumnIndex("books", "id")]);
-//            temp2.push_back(s);
-//            text.append(s);
-//            temp.push_back(text);
-//        }
-//        if (mode == "asceding") {
-//
-//        }
-//        else {
-//
-//        }
-//        for (std::string item : temp2) {
-//            result.push_back(Tables::getById("books", std::stoi(item)));
-//        }
-//        Interface::printTableFromData("books", headers["books"], result);
-    }
 
     static void printBooksByColumn(std::string mode="ascending") {
         std::cout << std::endl;
@@ -963,28 +900,6 @@ class Books {
         Interface::printTableFromData("books", headers["books"], result);
     }
 
-    static void _printBooksBySize(std::string mode="slimmer") {
-        std::cout << "Provide page number: ";
-        std::string input;
-        std::cin >> input;
-        std::vector<std::vector<std::string>> result;
-
-        int pageCount = Tables::getColumnIndex("books", "pages");
-//        for (std::vector<std::string> item : data["books"]) {
-//            if (mode == "slimmer") {
-//                if (std::stoi(item[pageCount]) >= std::stoi(input)) {
-//                    result.push_back(item);
-//                }
-//            }
-//            else if (mode == "thicker") {
-//                if (std::stoi(item[pageCount]) <= std::stoi(input)) {
-//                    result.push_back(item);
-//
-//                }
-//            }
-//        }
-//        Interface::printTableFromData("books", headers["books"], result);
-    }
 
     static void printBooksBySize(std::string mode="slimmer") {
         std::cout << "Provide number of pages:  ";
