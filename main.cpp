@@ -254,12 +254,15 @@ class Tables {
 
         bool flag = false;
         for(std::map<std::string, std::vector<Entity>>::iterator iter = data.begin(); iter != data.end(); ++iter) {
-            std::string item = iter->first;
+            std::string table = iter->first;
+            std::string filename;
+            filename.append(table);
+            filename.append(".txt");
             std::ifstream file;
-            file.open(item);
+            file.open(filename);
             if (!file) {
                 flag = true;
-                std::cout << "File " << item << " not found" << std::endl;
+                std::cout << "File " << table << " not found" << std::endl;
             }
             file.close();
         }
@@ -277,15 +280,18 @@ class Tables {
 
     static void createTables() {
         for(std::map<std::string, std::vector<Entity>>::iterator iter = data.begin(); iter != data.end(); ++iter) { //TODONE: iterator po hashtable
-            std::string item = iter->first;
+            std::string table = iter->first;
+            std::string filename;
+            filename.append(table);
+            filename.append(".txt");
             std::ofstream file;
-            file.open(item);
+            file.open(filename);
             if(!file) {
-                std::cerr << "file creation error " << item;
+                std::cerr << "file creation error " << table;
             }
             file.close();
 
-            std::cout << "~ table created " << item << "  ~" << std::endl;
+            std::cout << "~ table created " << table << "  ~" << std::endl;
         }
     }
 
@@ -293,9 +299,12 @@ class Tables {
         //TODONE:
         for(std::map<std::string, std::vector<Entity>>::iterator iter = data.begin(); iter != data.end(); ++iter) {
             std::vector<Entity> item = iter -> second;
-            std::string table = iter->first;
+            std::string table= iter->first;
+            std::string filename;
+            filename.append(table);
+            filename.append(".txt");
             std::ofstream file;
-            file.open(table, std::ios::app);
+            file.open(filename, std::ios::app);
             for(Entity e: item) {
                 std::string output;
                 if (table == "books") {
@@ -340,7 +349,7 @@ class Tables {
                 std::cerr << "file opening error " << table;
             }
 
-            file << (output);
+            file << output;
             }
         file.close();
         }
@@ -352,8 +361,11 @@ class Tables {
             std::vector<Entity> item = iter->second;
             std::string table = iter->first;
             std::cout << "-read table " << table << std::endl;
+            std::string filename;
+            filename.append(table);
+            filename.append(".txt");
             std::ifstream file;
-            file.open(table);
+            file.open(filename);
 
             if (!file) {
                 std::cerr << "File opening error" << table ;
@@ -541,7 +553,7 @@ class System {
             std::cout << std::endl;
             std::cout << std::endl;
             std::cout << std::endl;
-            std::cout << "     DO YOU WANT TO SAVE CHANGES? (y/n)";
+            std::cout << "     DO YOU WANT TO SAVE CHANGES? (y/n)" << std::endl;
             char order;
             std::cin >> order;
             std::cout << std::endl;
@@ -556,7 +568,8 @@ class System {
                 break;
             }
         }
-        //TODO: exit();
+        //TODONE: exit();
+        std::exit(0);
     }
 };
 
@@ -780,6 +793,7 @@ class Books {
                 "back"
         });
 
+        {
 //        switch(order) {
 //            case "dodaj":
 //                addBook();
@@ -810,6 +824,8 @@ class Books {
 //                interface::unknownCommandPrompt();
 //                menu();
 //        }
+        }
+
         if (order == "enter") {
             addBook();
             menu();
@@ -837,7 +853,8 @@ class Books {
             menu();
         }
         else if (order == "back") {
-            //TODO: None
+            //TODONE: None
+            NULL;
         }
         else {
             Interface::unknownCommandPrompt();
@@ -1048,7 +1065,8 @@ class Clients {
         }
 
         else if (order == "back") {
-            //TODO: exit()
+            //TODONE: exit()
+            NULL;
         }
 
         else {
@@ -1131,7 +1149,8 @@ class Authors {
             menu();
         }
         else if (order == "back") {
-            //TODO: None
+            //TODONE: None
+            NULL;
         }
         else {
             Interface::unknownCommandPrompt();
