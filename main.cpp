@@ -228,7 +228,7 @@ class Tables {
         return result.getEntity();
     }
 
-    static void initializeDB() { //TODO: potencjalna konktatencja nazwy pliku z .txt
+    static void initializeDB() { //TODONE: potencjalna konktatencja nazwy pliku z .txt
 
         bool flag = false;
         for(std::map<std::string, std::vector<Entity>>::iterator iter = data.begin(); iter != data.end(); ++iter) {
@@ -285,6 +285,7 @@ class Tables {
             file.open(filename, std::ios::app);
             for(Entity e: item) {
                 std::string output;
+
                 if (table == "books") {
                     output.append(std::to_string(e.getId()));
                     output.append(",");
@@ -298,9 +299,8 @@ class Tables {
                     output.append(",");
                     output.append(std::to_string(e.getIdAuthors()));
                     output.append("\n");
-
-
                 }
+
                 else if (table == "orders") {
                     output.append(std::to_string(e.getId()));
                     output.append(",");
@@ -320,9 +320,6 @@ class Tables {
                     output.append(e.getLastname());
                     output.append("\n");
                 }
-
-
-
             if(!file) {
                 std::cerr << "file opening error " << table;
             }
@@ -455,7 +452,12 @@ class System {
     public:
     static void boot() {
         std::cout << "LIBRARY MANAGER IS BOOTING..." << std::endl;
-        //sleep
+        //TODO: sleep
+
+        initializeConfig();
+        initializeData();
+        initializeHeaders();
+
         configLoading();
         Tables::initializeDB();
     }
@@ -561,7 +563,7 @@ class Interface {
         std::cout << std::endl;
     }
 
-    static std::string printInterface(std::string title, std::vector<std::string> options) { //TODO: sprawdz czy size parametrowego vectora sie sprawdzi czy jakis const
+    static std::string printInterface(std::string title, std::vector<std::string> options) { //TODONE: sprawdz czy size parametrowego vectora sie sprawdzi czy jakis const
         printHeader(title);
         std::cout << "     OPTIONS:" << std::endl;
         std::cout << std::endl;
@@ -602,7 +604,7 @@ class Interface {
                 if (title == "books") {
                     std::cout << "     " << item.getId() << "  |  "
                               << "     " << item.getTitles() << "  |  "
-                              << "     " << item.getGenres()[0] << "  |  "
+                              << "     " << item.getGenres()<< "  |  "
                               << "     " << item.getYear() << "  |  "
                               << "     " << item.getPages() << "  |  "
                               << "     " << item.getIdAuthors() << "  |  ";
@@ -620,7 +622,7 @@ class Interface {
                 }
         }
         if (pauseEnded) {
-            std::cout << "     [wciśnij ENTER]                 ";
+            std::cout << "     [press ENTER]                 ";
             std::cin.get(); // TODO: https://stackoverflow.com/questions/903221/press-enter-to-continue
         }
     }
@@ -756,7 +758,7 @@ class Books {
 //                printBooksBySize("thicker");
 //                menu();
 //            case "wróć":
-//                //TODO: None
+//
 //            default:
 //                interface::unknownCommandPrompt();
 //                menu();
@@ -829,7 +831,7 @@ class Books {
                     text = item.getTitles();
                     break;
                 case 2:
-                    text = item.getGenres()[0];
+                    text = item.getGenres();
                     break;
                 case 3:
                     text = std::to_string(item.getYear());
@@ -846,7 +848,7 @@ class Books {
             temp.push_back(text);
 
         }
-        if (mode == "asceding") {
+        if (mode == "ascending") {
             // TODONE: temp sort
             std::sort(temp.begin(), temp.end());
 
@@ -879,13 +881,13 @@ class Books {
             if (mode == "slimmer") {
                 if (item.getPages() >= std::stoi(input)) {
                 ////if (std::stoi(item[pageCount]) >= std::stoi(input)) {
-                    result.push_back(item);
+                    result.push_back(item.getEntity());
                 }
             }
             else if (mode == "thicker") {
                 ////if (std::stoi(item[pageCount]) <= std::stoi(input)) {
                 if (item.getPages() <= std::stoi(input)) {
-                    result.push_back(item);
+                    result.push_back(item.getEntity());
                 }
             }
         }
@@ -906,11 +908,11 @@ class Books {
         //// for (std::vector<std::string> item : data["books"]) {
             if(item.getIdAuthors() == idSearched) {
             ////if (item[Tables::getColumnIndex("books", "id authors")] == idSearched) {
-                result.push_back(item);
+                result.push_back(item.getEntity());
             }
         }
         // std::cout << getById("authors", idSearched));
-        std::string title = "ksiazka autorstwa ";
+        std::string title = "book written by: ";
         title.append(Tables::getById("authors", idSearched).getName());
         //// title.append(Tables::getById("authors", idSearched)[1]);
         title.append(" ");
@@ -989,8 +991,9 @@ class Orders {
             printAvailableBooks();
             menu();
         }
-        else if (order == "wróć") {
-            //TODO: none
+        else if (order == "back") {
+            //TODONE: none
+            NULL;
         }
         else {
             Interface::unknownCommandPrompt();
@@ -1008,7 +1011,7 @@ class Orders {
 
         std::vector<std::vector<std::string>> result;
         int idBooks = Tables::getColumnIndex("orders", "id books");
-        //TODO: brak implementacji
+        //TODONE: brak implementacji
 
     }
 
@@ -1071,7 +1074,6 @@ void menu() {
     else {
         Interface::unknownCommandPrompt();
     }
-
 }
 
 int main() {
@@ -1081,7 +1083,4 @@ int main() {
         std::cout << "WARNING! data write occurs after providing 'exit' command" << std::endl;
         menu();
     }
-
-
-
 }
