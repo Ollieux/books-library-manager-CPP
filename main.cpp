@@ -211,16 +211,11 @@ class Tables {
     }
 
     static Entity getById(std::string table, int id) {
-    //// static std::string getById(std::string table, int id) {
         Entity result;
         std::cout << "#szukanie id " << id << " w tableli " << table << "...";
-        //// int idColumn = getColumnIndex(table, "id");
         for(Entity item : data[table]) {
-        //// for (std::vector<std::string> item : data[table]) {
             bool flag = item.getId() == id;
             std::cout << item.getId() << "==" << id << "--> " << flag;
-            ////std::cout << std::to_string(item[idColumn]) << "==" << std::to_string(id) <<"--> " << item[idColumn] == id;
-            ////if(item[idColumn] == id) {
             if (item.getId() == id) {
                 result = item;
             }
@@ -731,39 +726,6 @@ class Books {
                 "read slimmer than",
                 "back"
         });
-
-        {
-//        switch(order) {
-//            case "dodaj":
-//                addBook();
-//                menu();
-//                // break;
-//            case "wypisz":
-//                printBooks();
-//                menu();
-//            case "wypisz rosnoąco":
-//                printBooksByColumn("descending");
-//                menu();
-//            case "wypisz malejąco":
-//                printBooksByColumn();
-//                menu();
-//            case "wypisz konkretnego autorstwa":
-//                printBooksByAuthorOnly();
-//                menu();
-//            case "wypisz chudsze niż":
-//                printBooksBySize();
-//                menu();
-//
-//            case "wypisz grubsze niż":
-//                printBooksBySize("thicker");
-//                menu();
-//            case "wróć":
-//
-//            default:
-//                interface::unknownCommandPrompt();
-//                menu();
-//        }
-        }
 
         if (order == "enter") {
             addBook();
