@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <map>
@@ -140,7 +141,7 @@ public:
         pages(pages),
         id_authors(id_authors){};
 
-    Entity returnEntity() {
+    Entity getEntity() {
         if (id != -1) {
             if (name != "0") {
                 if (lastname != "0") {
@@ -347,30 +348,205 @@ class Tables {
                 result = item;
             }
         }
-        return result.returnEntity();
+        return result.getEntity();
     }
 
     static void initializeDB() {
-        // TODO: sprawdzneie czy istnieja
-        createTables();
+        try {
+            std::cout << "baza danych nie została wykryta"; //TODO: endl
+            createTables();
+            std::cout << "~ baza danych została stworzona ~"; //TODO: endl
+        }
         readTables();
     }
 
     static void createTables() {
-        //for(std::vector<std::string item> : data) { //TODO: iterator po hashtable
-        //}
+        for(std::map<std::string, std::vector<Entity>>::iterator iter = data.begin(); iter != data.end(); ++iter) { //TODONE: iterator po hashtable
+            std::string item = iter->first;
+            std::ofstream file;
+            file.open(item);
+            if(!file) {
+                std::cerr << "Blad tworzenia pliku " << item;
+            }
+            file.close();
+
+            std::cout << "~ stworzono tabelę " << item << "  ~";
+        }
     }
 
     static void writeTables() {
-        //TODO:
+        //TODONE:
+        for(std::map<std::string, std::vector<Entity>>::iterator iter = data.begin(); iter != data.end(); ++iter) {
+            std::vector<Entity> item = iter -> second;
+            std::string table = iter->first;
+            std::ofstream file;
+            file.open(table, std::ios::app);
+            for(Entity e: item) {
+                std::string output;
+                if (table == "books") {
+                    output.append(std::to_string(e.getId()));
+                    output.append(",");
+                    output.append(e.getTitles());
+                    output.append(",");
+                    output.append(e.getGenres()[0]);
+                    output.append(",");
+                    output.append(std::to_string(e.getYear()));
+                    output.append(",");
+                    output.append(std::to_string(e.getPages()));
+                    output.append(",");
+                    output.append(std::to_string(e.getIdAuthors()));
+                    output.append("\n");
+
+
+                }
+                else if (table == "orders") {
+                    output.append(std::to_string(e.getId()));
+                    output.append(",");
+                    output.append(std::to_string(e.getBookId()));
+                    output.append(",");
+                    output.append(std::to_string(e.getClientId()));
+                    output.append(",");
+                    output.append(std::to_string(e.isLend()));
+                    output.append("\n");
+                }
+
+                else if (table == "clients" || table == "authors") {
+                    output.append(std::to_string(e.getId()));
+                    output.append(",");
+                    output.append(e.getName());
+                    output.append(",");
+                    output.append(e.getLastname());
+                    output.append("\n");
+                }
+
+
+
+            if(!file) {
+                std::cerr << "Blad otwarcia pliku " << table;
+            }
+
+            file << (output);
+            }
+        file.close();
+        }
     }
 
     static void readTables() {
-        //TODO:
+        for(std::map<std::string, std::vector<Entity>>::iterator iter = data.begin(); iter != data.end(); ++iter) {
+
+            std::vector<Entity> item = iter->second;
+            std::string table = iter->first;
+            std::cout << "-odczyt tabeli " << table;
+            std::ifstream file;
+            file.open(table);
+
+            if (!file) {
+                std::cerr << "Blad otwarcia pliku" << table;
+            }
+
+            if (table == "books") {
+
+                while (file) {
+
+                    Entity e;
+                    std::string input, value;
+                    file >> input;
+                    int i = input.find(",");
+                    value = input.substr(0, i);
+                    e.setId(std::stoi(value));
+
+                    input = input.substr(i + 1);
+                    i = input.find(",");
+                    value = input.substr(0, i);
+                    e.setTitles(value);
+
+                    input = input.substr(i + 1);
+                    i = input.find(",");
+                    value = input.substr(0, i);
+                    std::vector<std::string> genres;
+                    genres.push_back(value);
+                    e.setGenres(genres);
+
+                    input = input.substr(i + 1);
+                    i = input.find(",");
+                    value = input.substr(0, i);
+                    e.setYear(std::stoi(value));
+
+                    input = input.substr(i + 1);
+                    i = input.find(",");
+                    value = input.substr(0, i);
+                    e.setPages(std::stoi(value));
+
+                    input = input.substr(i + 1);
+                    i = input.find(",");
+                    value = input.substr(0, i);
+                    e.setIdAuthors(std::stoi(value));
+
+                    item.push_back(e.getEntity());
+
+                }
+                file.close();
+            } else if (table == "orders") {
+
+                while (file) {
+
+                    Entity e;
+                    std::string input, value;
+                    file >> input;
+                    int i = input.find(",");
+                    value = input.substr(0, i);
+                    e.setId(std::stoi(value));
+
+                    input = input.substr(i + 1);
+                    i = input.find(",");
+                    value = input.substr(0, i);
+                    e.setBookId(std::stoi(value));
+
+                    input = input.substr(i + 1);
+                    i = input.find(",");
+                    value = input.substr(0, i);
+                    e.setClientId(std::stoi(value));
+
+                    input = input.substr(i + 1);
+                    i = input.find(",");
+                    value = input.substr(0, i);
+                    e.setLend(std::stoi(value));
+
+                    item.push_back(e.getEntity());
+
+                }
+                file.close();
+            }
+
+            else if(table == "clients" || table == "authors") {
+
+                while (file) {
+                    std::string input, value;
+                    Entity e;
+                    file >> input;
+                    int i = input.find(",");
+                    value = input.substr(0, i);
+                    e.setId(std::stoi(value));
+
+                    input = input.substr(i + 1);
+                    i = input.find(",");
+                    value = input.substr(0, i);
+                    e.setName(value);
+
+                    input = input.substr(i + 1);
+                    i = input.find(",");
+                    value = input.substr(0, i);
+                    e.setLastname(value);
+
+                    item.push_back(e.getEntity());
+                }
+                file.close();
+            }
+        }
     }
 };
 
-class system {
+class System {
 
     public:
     static void boot() {
@@ -565,7 +741,7 @@ class Interface {
             std::string pre = item.substr(0, 3);
             std::string rest = item.substr(3);
             if (item == "id") {
-                e.setId(system::autoincrement(title));
+                e.setId(System::autoincrement(title));
             }
             else if (pre == "id ") {
                 if (rest == "clients") {
@@ -617,7 +793,7 @@ class Interface {
         std::cout << "     zakończono wprowadzanie danych";
         std::cout << std::endl;
 
-        return e.returnEntity();
+        return e.getEntity();
 
 
     }
@@ -894,7 +1070,7 @@ class Books {
     }
 };
 
-class clients {
+class Clients {
 
     public:
 
@@ -927,7 +1103,7 @@ class clients {
 
 };
 
-class orders {
+class Orders {
 
     public:
 
@@ -976,7 +1152,7 @@ class orders {
     }
 };
 
-class authors {
+class Authors {
     public:
     static void menu() {
         std::string order;
@@ -1015,16 +1191,16 @@ void menu() {
         Books::menu();
     }
     else if (order == "authors") {
-        authors::menu();
+        Authors::menu();
     }
     else if (order == "clients") {
-        clients::menu();
+        Clients::menu();
     }
     else if (order == "orders") {
-        orders::menu();
+        Orders::menu();
     }
     else if(order == "exit") {
-        system::quitting();
+        System::quitting();
     }
     else {
         Interface::unknownCommandPrompt();
@@ -1034,7 +1210,7 @@ void menu() {
 
 int main() {
 
-    system::boot();
+    System::boot();
     while(true) {
         std::cout << "UWAGA! zapis danych następuje przy wpisaniu komendy 'wyjdź'";
         menu();
