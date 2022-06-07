@@ -201,7 +201,7 @@ class Tables {
     public:
     static int getColumnIndex(std::string table, std::string headerName) {
         std::cout << "#searching for column index " << headerName << " in table " << table << "...";
-        int temp {-1};
+        int temp = -1;
         for (int i = 0; i < headers[table].size(); i++) {
             if (headers[table][i] == headerName) {
                 temp = i;
@@ -211,16 +211,12 @@ class Tables {
     }
 
     static Entity getById(std::string table, int id) {
-        Entity result;
         std::cout << "#szukanie id " << id << " w tableli " << table << "...";
         for(Entity item : data[table]) {
-            bool flag = item.getId() == id;
-            std::cout << item.getId() << "==" << id << "--> " << flag;
             if (item.getId() == id) {
-                result = item;
+                return item.getEntity();
             }
         }
-        return result.getEntity();
     }
 
     static void initializeDB() { //TODONE: potencjalna konktatencja nazwy pliku z .txt
@@ -492,7 +488,9 @@ class System {
                     std::string input;
                     file >> input;
                     if(i == line) {
+                        std::cout << "---------" << std::endl;
                         config[item] = std::stoi(input);
+                        std::cout << "+++++++++++++++++" << std::endl;
                         break;
                     }
                     i++;
@@ -654,12 +652,15 @@ class Interface {
         std::cout << std::endl;
 
         for (std::string item : headers[title]) {
-            std::string pre = item.substr(0, 3);
-            std::string rest = item.substr(3);
+
             if (item == "id") {
                 e.setId(System::autoincrement(title));
             }
-            else if (pre == "id ") {
+
+            else if (item.substr(0, 3) == "id ") {
+
+                // std::string pre = item.substr(0, 3);
+                std::string rest = item.substr(3);
                 if (rest == "clients") {
                     e.setClientId(choiceFromTable(rest));
                 }
@@ -686,7 +687,6 @@ class Interface {
                     e.setPages(std::stoi(input));
                 }
                 else if(item == "genres") {
-                    std::vector<std::string> temp;
                     e.setGenres(input);
                 }
                 else if (item == "lend") {
@@ -780,7 +780,6 @@ class Books {
         std::vector<std::string> temp;
         std::vector<Entity> result;
 
-
         for (Entity item : data["books"]){
 
             std::string text;
@@ -814,7 +813,6 @@ class Books {
             // TODONE: temp sort
             std::sort(temp.begin(), temp.end());
 
-
         }
         else {
             // TODONE temp sort, temp reverse
@@ -822,7 +820,7 @@ class Books {
         }
 
         //TODONE: sprawdz implementacje getById
-        for (std::string item : temp) {
+        for (std::string item : temp) { //TODO: czy aby napewno taka petla?, jednak git
             int i = item.find_first_of(",");
             std::string id = item.substr(i + 1);
 
@@ -838,16 +836,14 @@ class Books {
         std::cin >> input;
         std::vector<Entity> result;
 
-        int pageCount = Tables::getColumnIndex("books", "pages");
+        //// int pageCount = Tables::getColumnIndex("books", "pages");
         for (Entity item : data["books"]) {
             if (mode == "slimmer") {
                 if (item.getPages() >= std::stoi(input)) {
-                ////if (std::stoi(item[pageCount]) >= std::stoi(input)) {
                     result.push_back(item.getEntity());
                 }
             }
             else if (mode == "thicker") {
-                ////if (std::stoi(item[pageCount]) <= std::stoi(input)) {
                 if (item.getPages() <= std::stoi(input)) {
                     result.push_back(item.getEntity());
                 }
@@ -863,25 +859,19 @@ class Books {
         std::cout << "     provide author's id:";
         int idSearched;
         std::cin >> idSearched;
-        //// std::vector<std::vector<std::string>> result;
         std::vector<Entity> result;
 
         for(Entity item: data["books"]) {
-        //// for (std::vector<std::string> item : data["books"]) {
             if(item.getIdAuthors() == idSearched) {
-            ////if (item[Tables::getColumnIndex("books", "id authors")] == idSearched) {
                 result.push_back(item.getEntity());
             }
         }
         // std::cout << getById("authors", idSearched));
         std::string title = "book written by: ";
         title.append(Tables::getById("authors", idSearched).getName());
-        //// title.append(Tables::getById("authors", idSearched)[1]);
         title.append(" ");
         title.append(Tables::getById("authors", idSearched).getLastname());
-        //// title.append(Tables::getById("authors", idSearched)[2]);
         Interface::printTableFromData(title, headers["books"], result);
-
     }
 
     static void printBooks() {
