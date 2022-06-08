@@ -170,9 +170,10 @@ void initializeHeaders() {
     std::vector<std::string> books = {"id", "titles", "genres", "year", "pages", "id authors"};
     std::vector<std::string> authors = {"id", "name", "lastname"};
     std::vector<std::string> orders = {"id", "id books", "id clients",  "lend"};
-    headers["clients"] = clients;
+
     headers["books"] = books;
     headers["authors"] = authors;
+    headers["clients"] = clients;
     headers["orders"] = orders;
 
 }
@@ -184,16 +185,16 @@ void initializeData() {
     std::vector<Entity> orders = {};
 
 
-    data["clients"] = clients;
     data["books"] = books;
     data["authors"] = authors;
+    data["clients"] = clients;
     data["orders"] = orders;
 }
 
 void initializeConfig() {
     config["books"] = 0;
-    config["clients"] = 0;
     config["authors"] = 0;
+    config["clients"] = 0;
     config["orders"] = 0;
 
 }
@@ -275,7 +276,7 @@ class Tables {
             filename.append(table);
             filename.append(".txt");
             std::ofstream file;
-            file.open(filename, std::ios::app);
+            file.open(filename); // std::ios::app)
             for(Entity e: item) {
                 std::string output;
 
@@ -349,34 +350,36 @@ class Tables {
                     Entity e;
                     std::string input, value;
                     file >> input;
-                    int i = input.find(",");
-                    value = input.substr(0, i);
-                    e.setId(std::stoi(value));
+                    if(input.size() > 0) {
+                        int i = input.find(",");
+                        value = input.substr(0, i);
+                        e.setId(std::stoi(value));
 
-                    input = input.substr(i + 1);
-                    i = input.find(",");
-                    value = input.substr(0, i);
-                    e.setTitles(value);
+                        input = input.substr(i + 1);
+                        i = input.find(",");
+                        value = input.substr(0, i);
+                        e.setTitles(value);
 
-                    input = input.substr(i + 1);
-                    i = input.find(",");
-                    value = input.substr(0, i);
-                    e.setGenres(value);
+                        input = input.substr(i + 1);
+                        i = input.find(",");
+                        value = input.substr(0, i);
+                        e.setGenres(value);
 
-                    input = input.substr(i + 1);
-                    i = input.find(",");
-                    value = input.substr(0, i);
-                    e.setYear(std::stoi(value));
+                        input = input.substr(i + 1);
+                        i = input.find(",");
+                        value = input.substr(0, i);
+                        e.setYear(std::stoi(value));
 
-                    input = input.substr(i + 1);
-                    i = input.find(",");
-                    value = input.substr(0, i);
-                    e.setPages(std::stoi(value));
+                        input = input.substr(i + 1);
+                        i = input.find(",");
+                        value = input.substr(0, i);
+                        e.setPages(std::stoi(value));
 
-                    input = input.substr(i + 1);
-                    i = input.find(",");
-                    value = input.substr(0, i);
-                    e.setIdAuthors(std::stoi(value));
+                        input = input.substr(i + 1);
+                        i = input.find(",");
+                        value = input.substr(0, i);
+                        e.setIdAuthors(std::stoi(value));
+                    }
 
                     item.push_back(e.getEntity());
 
@@ -473,11 +476,13 @@ class System {
         std::ifstream file;
         file.open("config.txt");
         if (file) { //// Config istnieje
+            file.close();
             for (std::map<std::string, int>::iterator iter = config.begin(); iter != config.end(); ++iter) {
                 std::string item = iter->first;
                 int line = 0;
 
                 if(item == "books") {
+                    line = 0;
                 }
                 else if(item == "authors") {
                     line = 1;
@@ -488,6 +493,7 @@ class System {
                 else if(item == "orders") {
                     line = 3;
                 }
+                file.open("config.txt");
                 int i = 0;
                 while(true) {
                     std::string input;
@@ -500,6 +506,8 @@ class System {
                     }
                     i++;
                 }
+                std::cout << "config ok dla " << item << std::endl; //TODO:comment
+                file.close();
             }
             std::cout << "config read successfully" << std::endl;
             file.close();
@@ -605,18 +613,18 @@ class Interface {
                               << "     " << item.getGenres()<< "  |  "
                               << "     " << item.getYear() << "  |  "
                               << "     " << item.getPages() << "  |  "
-                              << "     " << item.getIdAuthors() << "  |  ";
+                              << "     " << item.getIdAuthors() << "  |  " << std::endl;
                 }
                 else if (title == "authors" || title == "clients") {
                     std ::cout << "     " << item.getId() << "  |  "
                                << "     " << item.getName() << "  |  "
-                               << "     " << item.getLastname() << "  |  ";
+                               << "     " << item.getLastname() << "  |  " << std:: endl;
                 }
                 else if (title == "orders") {
                     std::cout << "     " << item.getId() << "  |  "
                               << "     " << item.getBookId() << "  |  "
                               << "     " << item.getClientId() << "  |  "
-                              << "     " << item.getBorrowed() << "  |  ";
+                              << "     " << item.getBorrowed() << "  |  " << std::endl;
                 }
         }
         if (pauseEnded) {
