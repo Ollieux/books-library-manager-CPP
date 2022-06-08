@@ -222,7 +222,7 @@ class Tables {
         }
     }
 
-    static void initializeDB() { //TODONE: potencjalna konktatencja nazwy pliku z .txt
+    static void initializeDB() {
 
         bool flag = false;
         for(std::map<std::string, std::vector<Entity>>::iterator iter = data.begin(); iter != data.end(); ++iter) {
@@ -239,9 +239,9 @@ class Tables {
             file.close();
         }
         if(flag) {
-            std::cout << "There was no existing database" << std::endl; //TODONE: endl
+            std::cout << "There was no existing database" << std::endl;
             createTables();
-            std::cout << "~  database was created ~"; //TODONE: endl
+            std::cout << "~  database was created ~";
         }
         else {
             std::cout << "database exists!" << std::endl;
@@ -251,7 +251,7 @@ class Tables {
     }
 
     static void createTables() {
-        for(std::map<std::string, std::vector<Entity>>::iterator iter = data.begin(); iter != data.end(); ++iter) { //TODONE: iterator po hashtable
+        for(std::map<std::string, std::vector<Entity>>::iterator iter = data.begin(); iter != data.end(); ++iter) {
             std::string table = iter->first;
             std::string filename;
             filename.append(table);
@@ -268,7 +268,6 @@ class Tables {
     }
 
     static void writeTables() {
-        //TODONE:
         for(std::map<std::string, std::vector<Entity>>::iterator iter = data.begin(); iter != data.end(); ++iter) {
             std::vector<Entity> item = iter -> second;
             std::string table= iter->first;
@@ -416,7 +415,7 @@ class Tables {
                             value = input.substr(0, i);
                             e.setClientId(std::stoi(value));
 
-                            input = input.substr(i + 1); //tODO: czy ostatni element napewni do ,
+                            input = input.substr(i + 1);
                             i = input.find(",");
                             value = input.substr(0, i);
                             e.setBorrowed(value);
@@ -529,14 +528,11 @@ class System {
                     std::string input;
                     file >> input;
                     if(i == line) {
-                        ////std::cout << "---------" << std::endl;
                         config[item] = std::stoi(input);
-                        ////std::cout << "+++++++++++++++++" << std::endl;
                         break;
                     }
                     i++;
                 }
-                ////std::cout << "config ok dla " << item << std::endl; //TODO:comment out
                 file.close();
             }
             std::cout << "config read successfully" << std::endl;
@@ -582,7 +578,6 @@ class System {
                 break;
             }
         }
-        //TODONE: exit();
         std::exit(0);
     }
 };
@@ -599,7 +594,7 @@ class Interface {
         std::cout << std::endl;
     }
 
-    static std::string printInterface(std::string title, std::vector<std::string> options) { //TODONE: sprawdz czy size parametrowego vectora sie sprawdzi czy jakis const
+    static std::string printInterface(std::string title, std::vector<std::string> options) {
         printHeader(title);
         std::cout << "     OPTIONS:" << std::endl;
         std::cout << std::endl;
@@ -620,10 +615,9 @@ class Interface {
 
     static void unknownCommandPrompt() {
         std::cout << "!!! Unrecognised command !!!";
-        //sleep
+        //tODO: sleep
     }
 
-    //static void printTableFromData(std::string title, std::vector<std::string> headers, std::vector<std::vector<std::string>> data, bool pauseEnded=true) {
     static void printTableFromData(std::string title, std::vector<std::string> header, std::vector<Entity> _data,  bool pauseEnded=true) {
         std::cout << "  ########################";
         std::cout << std::endl;
@@ -796,7 +790,6 @@ class Books {
             menu();
         }
         else if (order == "back") {
-            //TODONE: None
             NULL;
         }
         else {
@@ -852,17 +845,14 @@ class Books {
 
         }
         if (mode == "ascending") {
-            // TODONE: temp sort
             std::sort(temp.begin(), temp.end());
 
         }
         else {
-            // TODONE temp sort, temp reverse
             std::reverse(temp.begin(), temp.end());
         }
 
-        //TODONE: sprawdz implementacje getById
-        for (std::string item : temp) { //TODO: czy aby napewno taka petla?, jednak git
+        for (std::string item : temp) {
             int i = item.find_first_of(",");
             std::string id = item.substr(i + 1);
 
@@ -943,7 +933,6 @@ class Clients {
         }
 
         else if (order == "back") {
-            //TODONE: exit()
             NULL;
         }
 
@@ -986,7 +975,6 @@ class Orders {
             menu();
         }
         else if (order == "back") {
-            //TODONE: none
             NULL;
         }
         else {
@@ -1002,9 +990,6 @@ class Orders {
     }
 
     static void printAvailableBooks() {
-
-
-        //TODONE: brak implementacji
 
     }
 
@@ -1027,7 +1012,6 @@ class Authors {
             menu();
         }
         else if (order == "back") {
-            //TODONE: None
             NULL;
         }
         else {
