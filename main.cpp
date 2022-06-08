@@ -330,7 +330,7 @@ class Tables {
     static void readTables() {
         for(std::map<std::string, std::vector<Entity>>::iterator iter = data.begin(); iter != data.end(); ++iter) {
 
-            std::vector<Entity> item = iter->second;
+            // std::vector<Entity> item = iter->second;
             std::string table = iter->first;
             std::cout << "-read table " << table << std::endl;
             std::string filename;
@@ -343,103 +343,133 @@ class Tables {
                 std::cerr << "File opening error" << table ;
             }
 
-            if (table == "books") {
+            else {
 
-                while (file) {
+                file.close();
+                if (table == "books") {
 
-                    Entity e;
-                    std::string input, value;
-                    file >> input;
-                    if(input.size() > 0) {
-                        int i = input.find(",");
-                        value = input.substr(0, i);
-                        e.setId(std::stoi(value));
+                    file.open(filename);
+                    std::string input;
+                    while (std::getline(file, input)) { // np. 1,Bolek i Lolek, bajka, ...
 
-                        input = input.substr(i + 1);
-                        i = input.find(",");
-                        value = input.substr(0, i);
-                        e.setTitles(value);
+                        Entity e;
+                        std::string value;
+                        ////file >> input;
+                        if (input.size() > 0) {
+                            int i = input.find(",");
+                            value = input.substr(0, i);
+                            e.setId(std::stoi(value));
 
-                        input = input.substr(i + 1);
-                        i = input.find(",");
-                        value = input.substr(0, i);
-                        e.setGenres(value);
+                            input = input.substr(i + 1);
+                            i = input.find(",");
+                            value = input.substr(0, i);
+                            e.setTitles(value);
 
-                        input = input.substr(i + 1);
-                        i = input.find(",");
-                        value = input.substr(0, i);
-                        e.setYear(std::stoi(value));
+                            input = input.substr(i + 1);
+                            i = input.find(",");
+                            value = input.substr(0, i);
+                            e.setGenres(value);
 
-                        input = input.substr(i + 1);
-                        i = input.find(",");
-                        value = input.substr(0, i);
-                        e.setPages(std::stoi(value));
+                            input = input.substr(i + 1);
+                            i = input.find(",");
+                            value = input.substr(0, i);
+                            e.setYear(std::stoi(value));
 
-                        input = input.substr(i + 1);
-                        i = input.find(",");
-                        value = input.substr(0, i);
-                        e.setIdAuthors(std::stoi(value));
+                            input = input.substr(i + 1);
+                            i = input.find(",");
+                            value = input.substr(0, i);
+                            e.setPages(std::stoi(value));
+
+                            input = input.substr(i + 1);
+                            i = input.find(",");
+                            value = input.substr(0, i);
+                            e.setIdAuthors(std::stoi(value));
+                            data[table].push_back(e.getEntity());
+                        }
+                        else {
+                            break;
+                        }
+
                     }
+                    file.close();
 
-                    item.push_back(e.getEntity());
+                } else if (table == "orders") {
 
+                    file.open(filename);
+                    std::string input;
+                    while (std::getline(file, input)) {
+                        Entity e;
+                        std::string value;
+                        ////file >> input;
+                        if (input.size() > 0) {
+                            int i = input.find(",");
+                            value = input.substr(0, i);
+                            e.setId(std::stoi(value));
+
+                            input = input.substr(i + 1);
+                            i = input.find(",");
+                            value = input.substr(0, i);
+                            e.setBookId(std::stoi(value));
+
+                            input = input.substr(i + 1);
+                            i = input.find(",");
+                            value = input.substr(0, i);
+                            e.setClientId(std::stoi(value));
+
+                            input = input.substr(i + 1); //tODO: czy ostatni element napewni do ,
+                            i = input.find(",");
+                            value = input.substr(0, i);
+                            e.setBorrowed(value);
+
+                            data[table].push_back(e.getEntity());
+                        }
+                        else {
+                            break;
+                        }
+
+                    }
+                    file.close();
+                } else if (table == "clients" || table == "authors") {
+
+                    file.open(filename);
+                    std::string input;
+                    while (std::getline(file, input)) {
+                        std::string value;
+                        Entity e;
+                        ////file >> input;
+                        if (input.size() > 0) {
+                            std::cout << input << std::endl;
+                            int i = input.find(",");
+                            value = input.substr(0, i);
+
+                            e.setId(std::stoi(value));
+
+                            ////std::cout << value << std::endl;
+
+                            input = input.substr(i + 1);
+                            i = input.find(",");
+                            value = input.substr(0, i);
+                            e.setName(value);
+
+                            ////std::cout << value << std::endl;
+
+                            input = input.substr(i + 1);
+                            i = input.find(",");
+                            value = input.substr(0, i);
+                            e.setLastname(value);
+
+                            ////std::cout << value << std::endl;
+
+                            data[table].push_back(e.getEntity());
+                            ////std::cout << "++++++++++++" << std::endl;
+                        }
+                        else {
+                            std::cout << "Tables are empty" << std::endl;
+                            break;
+                        }
+                    }
+                    file.close();
                 }
-                file.close();
-            } else if (table == "orders") {
-
-                while (file) {
-
-                    Entity e;
-                    std::string input, value;
-                    file >> input;
-                    int i = input.find(",");
-                    value = input.substr(0, i);
-                    e.setId(std::stoi(value));
-
-                    input = input.substr(i + 1);
-                    i = input.find(",");
-                    value = input.substr(0, i);
-                    e.setBookId(std::stoi(value));
-
-                    input = input.substr(i + 1);
-                    i = input.find(",");
-                    value = input.substr(0, i);
-                    e.setClientId(std::stoi(value));
-
-                    input = input.substr(i + 1); //tODO: czy ostatni element napewni do ,
-                    i = input.find(",");
-                    value = input.substr(0, i);
-                    e.setBorrowed(value);
-
-                    item.push_back(e.getEntity());
-
-                }
-                file.close();
-            }
-
-            else if(table == "clients" || table == "authors") {
-
-                while (file) {
-                    std::string input, value;
-                    Entity e;
-                    file >> input;
-                    int i = input.find(",");
-                    value = input.substr(0, i);
-                    e.setId(std::stoi(value));
-
-                    input = input.substr(i + 1);
-                    i = input.find(",");
-                    value = input.substr(0, i);
-                    e.setName(value);
-
-                    input = input.substr(i + 1);
-                    i = input.find(",");
-                    value = input.substr(0, i);
-                    e.setLastname(value);
-
-                    item.push_back(e.getEntity());
-                }
-                file.close();
             }
         }
         std::cout << std::endl;
@@ -499,14 +529,14 @@ class System {
                     std::string input;
                     file >> input;
                     if(i == line) {
-                        std::cout << "---------" << std::endl;
+                        ////std::cout << "---------" << std::endl;
                         config[item] = std::stoi(input);
-                        std::cout << "+++++++++++++++++" << std::endl;
+                        ////std::cout << "+++++++++++++++++" << std::endl;
                         break;
                     }
                     i++;
                 }
-                std::cout << "config ok dla " << item << std::endl; //TODO:comment
+                ////std::cout << "config ok dla " << item << std::endl; //TODO:comment out
                 file.close();
             }
             std::cout << "config read successfully" << std::endl;
@@ -653,7 +683,7 @@ class Interface {
                std::string temp;
                std::cout << "     choose id " << title <<":";
                std::cin >> temp;
-               return stoi(temp);
+               return std::stoi(temp);
             }
         }
     }
