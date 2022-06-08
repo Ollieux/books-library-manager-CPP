@@ -41,6 +41,7 @@ public:
             if (name != "0") {
                 if (lastname != "0") {
                     Entity e(id, name, lastname);
+                    std::cout << "Entity author/client" << std::endl;
                     return e;
                 }
             }
@@ -49,6 +50,7 @@ public:
                     if (client_id != -1) {
                         if(borrowed != "0") {
                             Entity e(id, book_id, client_id, borrowed);
+                            std::cout << "Entity order" << std::endl;
                             return e;
                         }
                     }
@@ -60,6 +62,7 @@ public:
                                 if (pages != -1) {
                                     if (id_authors != -1) {
                                         Entity e(id, titles, genres, year, pages, id_authors);
+                                        std::cout << "Entity book" << std::endl;
                                         return e;
                                     }
                                 }
@@ -203,7 +206,7 @@ class Tables {
 
     public:
     static int getColumnIndex(std::string table, std::string headerName) {
-        std::cout << "#searching for column index " << headerName << " in table " << table << "...";
+        std::cout << "#searching for column index " << headerName << " in table " << table << "..." << std::endl;
         int temp = -1;
         for (int i = 0; i < headers[table].size(); i++) {
             if (headers[table][i] == headerName) {
@@ -214,7 +217,7 @@ class Tables {
     }
 
     static Entity getById(std::string table, int id) {
-        std::cout << "#szukanie id " << id << " w tableli " << table << "...";
+        std::cout << "#searching for id " << id << " in table " << table << "..." << std::endl;
         for(Entity item : data[table]) {
             if (item.getId() == id) {
                 return item.getEntity();
@@ -241,7 +244,7 @@ class Tables {
         if(flag) {
             std::cout << "There was no existing database" << std::endl;
             createTables();
-            std::cout << "~  database was created ~";
+            std::cout << "~  database was created ~" << std::endl;
         }
         else {
             std::cout << "database exists!" << std::endl;
@@ -437,7 +440,7 @@ class Tables {
                         Entity e;
                         ////file >> input;
                         if (input.size() > 0) {
-                            std::cout << input << std::endl;
+                            ////std::cout << input << std::endl;
                             int i = input.find(",");
                             value = input.substr(0, i);
 
@@ -608,7 +611,8 @@ class Interface {
         std::cout << std::endl;
         std::string order;
         std::cout << "     ~[provide command]~>";
-        std::cin >> order;
+        std::getline(std::cin, order);
+        ////std::cout << "order = " << order << std::endl;
         std::cout << std::endl;
         return order;
     }
@@ -653,7 +657,8 @@ class Interface {
         }
         if (pauseEnded) {
             std::cout << "     [press ENTER]                 ";
-            std::cin.get(); // TODO: https://stackoverflow.com/questions/903221/press-enter-to-continue
+            char c;
+            std::cin.get(c);
         }
     }
 
@@ -800,7 +805,6 @@ class Books {
 
     private:
 
-
     static void printBooksByColumn(std::string mode="ascending") {
         std::cout << std::endl;
         for (std::string item : headers["books"]) {
@@ -868,7 +872,6 @@ class Books {
         std::cin >> input;
         std::vector<Entity> result;
 
-        //// int pageCount = Tables::getColumnIndex("books", "pages");
         for (Entity item : data["books"]) {
             if (mode == "slimmer") {
                 if (item.getPages() >= std::stoi(input)) {
