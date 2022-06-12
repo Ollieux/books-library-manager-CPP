@@ -21,7 +21,7 @@ class Entity {
 
 
 public:
-    Entity() : id(-1), titles("0"), genres({}), year(-1), pages(-1), id_authors(-1), name("0"),
+    Entity() : id(-1), titles("0"), genres("0"), year(-1), pages(-1), id_authors(-1), name("0"),
               lastname("0"), book_id(-1), client_id(-1), borrowed("0") {};
 
     Entity(int id, std::string name, std::string lastname): id(id), name(name), lastname(lastname){};
@@ -167,6 +167,7 @@ public:
 std::map<std::string, std::vector<std::string>> headers;
 std::map<std::string, std::vector<Entity>> data;
 std::map<std::string, int> config;
+std::vector<Entity> _data_;
 
 void initializeHeaders() {
     std::vector<std::string> clients = {"id", "name", "lastname"};
@@ -622,7 +623,7 @@ class Interface {
         //tODO: sleep
     }
 
-    static void printTableFromData(std::string title, std::vector<std::string> header, std::vector<Entity> _data,  bool pauseEnded=true) {
+    static void printTableFromData(std::string title, std::vector<std::string> header,  bool pauseEnded=true) {
         std::cout << "  ########################";
         std::cout << std::endl;
         std::cout << "     " << title;
@@ -632,7 +633,7 @@ class Interface {
         }
         std::cout << std::endl;
         //for (std::vector<std::string> item: data) {
-        for(Entity item : _data) {
+        for(Entity item : _data_) {
             // std::vector <std::string> temp;
             //for (std::string subitem: item) {
                 if (title == "books") {
@@ -663,7 +664,13 @@ class Interface {
     }
 
     static void printTable(std::string name, bool pauseEnded=true) {
-        printTableFromData(name, headers[name], data[name], pauseEnded);
+
+        _data_.clear(); // TODO: moze jednak data[name]
+        for(Entity item : data[name]) {
+            _data_.push_back(item);
+        }
+
+        printTableFromData(name, headers[name], pauseEnded);
     }
 
 
@@ -716,8 +723,9 @@ class Interface {
             }
             else {
 
+                std::cout << item << ":";
                 std::string input;
-                std::cin >> input;
+                std::getline(std::cin, input);
                 std::replace(input.begin(), input.end(), ',', '.');
                 if(item == "name") {
                     e.setName(input);
@@ -813,11 +821,12 @@ class Books {
         std::cout << std::endl;
         std::string input;
         std::cout << "     choose column:";
-        std::cin >> input;
+        std::getline(std::cin, input);
         int column = Tables::getColumnIndex("books", input);
 
         std::vector<std::string> temp;
-        std::vector<Entity> result;
+        _data_.clear();
+
 
         for (Entity item : data["books"]){
 
@@ -860,9 +869,9 @@ class Books {
             int i = item.find_first_of(",");
             std::string id = item.substr(i + 1);
 
-            result.push_back(Tables::getById("books", std::stoi(id)));
+            _data_.push_back(Tables::getById("books", std::stoi(id)));
         }
-        Interface::printTableFromData("books", headers["books"], result);
+        Interface::printTableFromData("books", headers["books"]);
     }
 
 
@@ -870,21 +879,21 @@ class Books {
         std::cout << "Provide number of pages:  ";
         std::string input;
         std::cin >> input;
-        std::vector<Entity> result;
+        _data_.clear();
 
         for (Entity item : data["books"]) {
             if (mode == "slimmer") {
                 if (item.getPages() >= std::stoi(input)) {
-                    result.push_back(item.getEntity());
+                    _data_.push_back(item.getEntity());
                 }
             }
             else if (mode == "thicker") {
                 if (item.getPages() <= std::stoi(input)) {
-                    result.push_back(item.getEntity());
+                    _data_.push_back(item.getEntity());
                 }
             }
         }
-        Interface::printTableFromData("books", headers["books"], result);
+        Interface::printTableFromData("books", headers["books"]);
     }
 
     static void printBooksByAuthorOnly() {
@@ -894,11 +903,11 @@ class Books {
         std::cout << "     provide author's id:";
         int idSearched;
         std::cin >> idSearched;
-        std::vector<Entity> result;
+        _data_.clear();
 
         for(Entity item: data["books"]) {
             if(item.getIdAuthors() == idSearched) {
-                result.push_back(item.getEntity());
+                _data_.push_back(item.getEntity());
             }
         }
         // std::cout << getById("authors", idSearched));
@@ -906,7 +915,7 @@ class Books {
         title.append(Tables::getById("authors", idSearched).getName());
         title.append(" ");
         title.append(Tables::getById("authors", idSearched).getLastname());
-        Interface::printTableFromData(title, headers["books"], result);
+        Interface::printTableFromData(title, headers["books"]);
     }
 
     static void printBooks() {
